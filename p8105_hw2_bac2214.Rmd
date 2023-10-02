@@ -96,9 +96,14 @@ The data contains `r num_col` columns and `r num_rows`. I see that the first yea
 
 ## Problem 2
 ```{r}
-mr_trashwheel_df=
-  read_excel("data/trashwheel.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N549" |> janitor::clean_names() |> filter(dumpster != "NA") |> mutate(homes_powered = weight_tons * 500) 
-  
+mr_trashwheel_df =
+  read_excel("data/trashwheel.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N549") |> janitor::clean_names() |> mutate(homes_powered = weight_tons * 500, trashwheel_name = "mr_trashwheel") |> relocate(trashwheel_name)
+
+professor_trashwheel_df = 
+  read_excel("data/trashwheel.xlsx", sheet = "Professor Trash Wheel", range = "A2:M96") |> janitor::clean_names() |> mutate(homes_powered = weight_tons * 500, trashwheel_name = "professor_trashwheel")|> relocate(trashwheel_name)
+
+gwynnda_trashwheel_df = 
+  read_excel("data/trashwheel.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:K108") |> janitor::clean_names() |> mutate(homes_powered = weight_tons * 500, trashwheel_name = "gwynnda_trashwheel") |> relocate(trashwheel_name)
            
 ```
 
