@@ -18,27 +18,30 @@ pols_month_df =
   mutate(
     month = case_match(
     month,
-    "01" ~ "January",
-    "02" ~ "February",
-    "03" ~ "March",
-    "04" ~ "April",
-    "05" ~ "May",
-    "06" ~ "June",
-    "07" ~ "July",
-    "08" ~ "August",
-    "09" ~ "September",
-    "10" ~ "October",
-    "11" ~ "November",
-    "12" ~ "December")) |> 
+    "01" ~ "jan",
+    "02" ~ "feb",
+    "03" ~ "mar",
+    "04" ~ "apr",
+    "05" ~ "may",
+    "06" ~ "jun",
+    "07" ~ "jul",
+    "08" ~ "aug",
+    "09" ~ "sep",
+    "10" ~ "oct",
+    "11" ~ "nov",
+    "12" ~ "dec")) |> 
   mutate(president = case_when(
      prez_dem == 1 ~ "dem",
     prez_gop == 1 ~ "gop",
     prez_gop == 2 ~ "gop"
   )) |> select(-prez_dem, -prez_gop, -day)
   
-    
+ 
+# Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
+   
 unemployment_df = 
-  read_csv("fivethirtyeight_datasets/unemployment.csv")
+  read_csv("fivethirtyeight_datasets/unemployment.csv") |> 
+  janitor::clean_names() |> 
 
 snp_df = 
   read_csv("fivethirtyeight_datasets/snp.csv")
