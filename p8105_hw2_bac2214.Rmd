@@ -74,6 +74,24 @@ unemployment_df =
 fivethirtyeight_merge = 
   left_join(pols_month_df, snp_df) |>
   left_join(x = _, y = unemployment_df)
+
+
+## about the dataset
+min_year <- fivethirtyeight_merge |> 
+  select(year) |> 
+  pull() |> 
+  min()
+
+max_year <- fivethirtyeight_merge |> 
+  select(year) |> 
+  pull() |> 
+  max()
+
+num_rows = nrow(fivethirtyeight_merge)
+num_col = ncol(fivethirtyeight_merge)
+
 ```
+
+The data contains `r num_col` columns and `r num_rows`. I see that the first year of data is `r min_year`  while the most recent year is `r max_year`. The `month` and `year` variables were very important for merging the 3 datasets together. An abbreviation wasn't really necessary in this case, but it was good to keep consistent naming conventions across all 3 datasets.
 
 
