@@ -14,7 +14,7 @@ library(readxl)
 ## Problem 1
 ```{r}
 pols_month_df = 
-  read_csv("fivethirtyeight_datasets/pols-month.csv") |> 
+  read_csv("data/pols-month.csv") |> 
   janitor::clean_names() |> 
   separate_wider_delim(mon, "-", names = c("year","month","day")) |> 
   mutate(
@@ -42,7 +42,7 @@ pols_month_df =
 # Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
   
 snp_df = 
-  read_csv("fivethirtyeight_datasets/snp.csv") |> 
+  read_csv("data/snp.csv") |> 
   janitor::clean_names() |> 
   separate_wider_delim(date, "/", names = c("month", "day", "year")) |> 
   select(year, month,-day, close,) |> 
@@ -64,7 +64,7 @@ snp_df =
   
 
 unemployment_df = 
-  read_csv("fivethirtyeight_datasets/unemployment.csv") |> 
+  read_csv("data/unemployment.csv") |> 
   janitor::clean_names() |> 
   pivot_longer(jan:dec,
                names_to = "month",
@@ -94,4 +94,10 @@ num_col = ncol(fivethirtyeight_merge)
 
 The data contains `r num_col` columns and `r num_rows`. I see that the first year of data is `r min_year`  while the most recent year is `r max_year`. The `month` and `year` variables were very important for merging the 3 datasets together. An abbreviation wasn't really necessary in this case, but it was good to keep consistent naming conventions across all 3 datasets.
 
+## Problem 2
+```{r}
+trashwheel_df=
+  read_excel("data/trashwheel.xlsx", sheet = "Mr. Trash Wheel", skip = 1) |> janitor::clean_names() |> select(-homes_powered) |> filter(dumpster != "NA")
+  
+```
 
