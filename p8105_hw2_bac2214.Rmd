@@ -7,6 +7,8 @@ output: github_document
 
 ```{r, echo=FALSE, message=FALSE}
 library(tidyverse)
+library(lubridate)
+library(readxl)
 ```
 
 ## Problem 1
@@ -29,21 +31,49 @@ pols_month_df =
     "09" ~ "sep",
     "10" ~ "oct",
     "11" ~ "nov",
-    "12" ~ "dec")) |> 
+    "12" ~ "dec"), year = as.double(year)) |> 
   mutate(president = case_when(
      prez_dem == 1 ~ "dem",
     prez_gop == 1 ~ "gop",
     prez_gop == 2 ~ "gop"
-  )) |> select(-prez_dem, -prez_gop, -day)
+  )) |> select(-prez_dem, -prez_gop, -day) 
   
  
 # Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
-   
+  
+snp_df = 
+  read_csv("fivethirtyeight_datasets/snp.csv") |> 
+  janitor::clean_names() |> 
+  separate_wider_delim(date, "/", names = c("month", "day", "year")) |> 
+  select(year, month,-day, close,) |> 
+  mutate(
+    month = case_match(
+    month,
+    "1" ~ "jan",
+    "2" ~ "feb",
+    "3" ~ "mar",
+    "4" ~ "apr",
+    "5" ~ "may",
+    "6" ~ "jun",
+    "7" ~ "jul",
+    "8" ~ "aug",
+    "9" ~ "sep",
+    "10" ~ "oct",
+    "11" ~ "nov",
+    "12" ~ "dec")) |> mutate(year = as.double(year), year = year + 2000)
+  
+
 unemployment_df = 
   read_csv("fivethirtyeight_datasets/unemployment.csv") |> 
   janitor::clean_names() |> 
+  pivot_longer(jan:dec,
+               names_to = "month",
+               values_to = "unemployment_percentage") 
 
-snp_df = 
-  read_csv("fivethirtyeight_datasets/snp.csv")
+
+fivethirtyeight_merge = 
+  left_join(pols_month_df, snp_df) |>
+  left_join(x = _, y = unemployment_df)
 ```
+
 
