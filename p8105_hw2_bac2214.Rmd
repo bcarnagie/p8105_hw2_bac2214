@@ -113,23 +113,24 @@ num_col2 = ncol(trashwheel_bind_df)
 
 na_count = sum(is.na(trashwheel_bind_df$plastic_bags))
 
-# there are `r num_col2` columns and `r num_rows2` observations. I noticed that there are `r na_count` in the `plastic bag` variable due to the fact that `mr_trashwheel_df` and `professor_trashwheel_df` did not collect data for this variable. Cigarette butts seem be a huge contributor of trash, with all 3 trashwheels collecting a total of `r cigbutts_count` butts total. 
+
 
 ```
 
+There are `r num_col2` columns and `r num_rows2` observations. I noticed that there are `r na_count` in the `plastic bag` variable due to the fact that `mr_trashwheel_df` and `professor_trashwheel_df` did not collect data for this variable. Cigarette butts seem be a huge contributor of trash, with all 3 trashwheels collecting a total of `r cigbutts_count` butts total. 
 
 
 
 # For available data, what was the total weight of trash collected by Professor Trash Wheel?
 ```{r}
+professortrashwheel_total_wt = trashwheel_bind_df |> 
+  select(weight_tons, trashwheel_name) |> filter(trashwheel_name == "professor_trashwheel") |> 
+  pull("weight_tons") |> 
+  sum()
 
-professortrashwheel_total_wt_df = 
-filter(trashwheel_bind_df, trashwheel_name == "professor_trashwheel") |>  select(trashwheel_name, weight_tons) 
-  
-professortrashwheel_total_wt= sum(professortrashwheel_total_wt_df$weight_tons)
 ```
-
 The total weight of trash collected by Professor Trash Wheel is `r professortrashwheel_total_wt` tons.
+
 
 
 What was the total number of cigarette butts collected by Gwynnda in July of 2021?
