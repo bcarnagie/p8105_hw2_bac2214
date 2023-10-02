@@ -1,0 +1,13 @@
+---
+title: "p8105_hw2_bac2214"
+author: "Brianna Carnagie"
+date: "2023-10-02"
+output: github_document
+---
+
+
+## Question 1
+```{r}
+
+```
+
