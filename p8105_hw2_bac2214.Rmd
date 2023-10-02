@@ -33,10 +33,10 @@ pols_month_df =
   mutate(president = case_when(
      prez_dem == 1 ~ "dem",
     prez_gop == 1 ~ "gop",
-  )) |> select(-prez_dem,-prez_gop,-day)
+    prez_gop == 2 ~ "gop"
+  )) |> select(-prez_dem, -prez_gop, -day)
   
     
-
 unemployment_df = 
   read_csv("fivethirtyeight_datasets/unemployment.csv")
 
