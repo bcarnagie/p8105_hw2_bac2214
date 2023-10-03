@@ -97,13 +97,13 @@ The data contains `r num_col` columns and `r num_rows` rows . I see that the fir
 ## Problem 2
 ```{r}
 mr_trashwheel_df =
-  read_excel("data/trashwheel.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N549") |> janitor::clean_names() |> mutate(homes_powered = weight_tons * 500, trashwheel_name = "mr_trashwheel", year = as.double(year)) |> relocate(trashwheel_name)
+  read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N586") |> janitor::clean_names() |> mutate(homes_powered = (weight_tons * 500)/30, trashwheel_name = "mr_trashwheel", year = as.double(year)) |> relocate(trashwheel_name)
 
 professor_trashwheel_df = 
-  read_excel("data/trashwheel.xlsx", sheet = "Professor Trash Wheel", range = "A2:M96") |> janitor::clean_names() |> mutate(homes_powered = weight_tons * 500, trashwheel_name = "professor_trashwheel")|> relocate(trashwheel_name)
+  read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M108") |> janitor::clean_names() |> mutate(homes_powered = (weight_tons * 500)/30, trashwheel_name = "professor_trashwheel")|> relocate(trashwheel_name)
 
 gwynnda_trashwheel_df = 
-  read_excel("data/trashwheel.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:K108") |> janitor::clean_names() |> mutate(homes_powered = weight_tons * 500, trashwheel_name = "gwynnda_trashwheel") |> relocate(trashwheel_name)
+  read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L157") |> janitor::clean_names() |> mutate(homes_powered = (weight_tons * 500)/30, trashwheel_name = "gwynnda_trashwheel") |> relocate(trashwheel_name)
  
 trashwheel_bind_df = 
   bind_rows(mr_trashwheel_df, professor_trashwheel_df, gwynnda_trashwheel_df) 
