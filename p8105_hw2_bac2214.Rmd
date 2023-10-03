@@ -9,10 +9,12 @@ output: github_document
 library(tidyverse)
 library(lubridate)
 library(readxl)
+library(dplyr)
 ```
 
-## Problem 1
-```{r}
+# Problem 1
+#### Cleaning the first dataset
+```{r, message=FALSE}
 pols_month_df = 
   read_csv("data/pols-month.csv") |> 
   janitor::clean_names() |> 
@@ -37,10 +39,10 @@ pols_month_df =
     prez_gop == 1 ~ "gop",
     prez_gop == 2 ~ "gop"
   )) |> select(-prez_dem, -prez_gop, -day) 
-  
- 
-# Second, clean the data in snp.csv using a similar process to the above. For consistency across datasets, arrange according to year and month, and organize so that year and month are the leading columns.
-  
+``` 
+
+#### Cleaning the second dataset
+```{r, message=FALSE}
 snp_df = 
   read_csv("data/snp.csv") |> 
   janitor::clean_names() |> 
@@ -61,22 +63,27 @@ snp_df =
     "10" ~ "oct",
     "11" ~ "nov",
     "12" ~ "dec")) |> mutate(year = as.double(year), year = year + 2000)
-  
+```
 
+#### Cleaning the last dataset 
+```{r, message=FALSE}
 unemployment_df = 
   read_csv("data/unemployment.csv") |> 
   janitor::clean_names() |> 
   pivot_longer(jan:dec,
                names_to = "month",
                values_to = "unemployment_percentage") 
-
-
+```
+  
+#### Merging the dataset
+```{r}
 fivethirtyeight_merge = 
   left_join(pols_month_df, snp_df) |>
   left_join(x = _, y = unemployment_df)
+```
 
-
-## about the dataset
+#### Making variables about the dataset
+```{r}
 min_year <- fivethirtyeight_merge |> 
   select(year) |> 
   pull() |> 
@@ -89,51 +96,74 @@ max_year <- fivethirtyeight_merge |>
 
 num_rows = nrow(fivethirtyeight_merge)
 num_col = ncol(fivethirtyeight_merge)
-
 ```
 
 The data contains `r num_col` columns and `r num_rows` rows . I see that the first year of data is `r min_year`  while the most recent year is `r max_year`. The `month` and `year` variables were very important for merging the 3 datasets together. An abbreviation wasn't really necessary in this case, but it was good to keep consistent naming conventions across all 3 datasets.
 
 ## Problem 2
+
+#### Cleaning the first dataset
 ```{r}
 mr_trashwheel_df =
   read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Mr. Trash Wheel", range = "A2:N586") |> janitor::clean_names() |> mutate(homes_powered = (weight_tons * 500)/30, trashwheel_name = "mr_trashwheel", year = as.double(year)) |> relocate(trashwheel_name)
+```
 
+#### Cleaning the second dataset
+```{r}
 professor_trashwheel_df = 
   read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Professor Trash Wheel", range = "A2:M108") |> janitor::clean_names() |> mutate(homes_powered = (weight_tons * 500)/30, trashwheel_name = "professor_trashwheel")|> relocate(trashwheel_name)
+```
 
+#### Cleaning the last dataset
+```{r}
 gwynnda_trashwheel_df = 
-  read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L157") |> janitor::clean_names() |> mutate(homes_powered = (weight_tons * 500)/30, trashwheel_name = "gwynnda_trashwheel") |> relocate(trashwheel_name)
- 
-trashwheel_bind_df = 
-  bind_rows(mr_trashwheel_df, professor_trashwheel_df, gwynnda_trashwheel_df) 
+  read_excel("data/202309 Trash Wheel Collection Data.xlsx", sheet = "Gwynnda Trash Wheel", range = "A2:L157") |>     janitor::clean_names() |> mutate(homes_powered = (weight_tons * 500)/30, trashwheel_name = "gwynnda_trashwheel") |> relocate(trashwheel_name)
+```
 
+#### Binding all 3 datasets together
+```{r}
+trashwheel_bind_df = 
+  bind_rows(mr_trashwheel_df, professor_trashwheel_df, gwynnda_trashwheel_df)
+```
+
+ 
+#### Making variables about the dataset
+```{r}
 num_rows2 = nrow(trashwheel_bind_df)
 num_col2 = ncol(trashwheel_bind_df)
 
 na_count = sum(is.na(trashwheel_bind_df$plastic_bags))
 
-
-
+cigbutts_count = trashwheel_bind_df |> 
+  select(plastic_bags) |> 
+  pull() |> 
+  sum(na.rm = TRUE)
 ```
 
 There are `r num_col2` columns and `r num_rows2` observations. I noticed that there are `r na_count` in the `plastic bag` variable due to the fact that `mr_trashwheel_df` and `professor_trashwheel_df` did not collect data for this variable. Cigarette butts seem be a huge contributor of trash, with all 3 trashwheels collecting a total of `r cigbutts_count` butts total. 
 
 
-
-# For available data, what was the total weight of trash collected by Professor Trash Wheel?
+> For available data, what was the total weight of trash collected by Professor Trash Wheel?
 ```{r}
 professortrashwheel_total_wt = trashwheel_bind_df |> 
-  select(weight_tons, trashwheel_name) |> filter(trashwheel_name == "professor_trashwheel") |> 
+  select(trashwheel_name, weight_tons) |> filter(trashwheel_name == "professor_trashwheel") |> 
   pull("weight_tons") |> 
-  sum()
-
+  sum(na.rm = TRUE)
 ```
+
 The total weight of trash collected by Professor Trash Wheel is `r professortrashwheel_total_wt` tons.
 
 
+> What was the total number of cigarette butts collected by Gwynnda in July of 2021?
+```{r}
+gwynndatrashwheel_total_cigbutts = subset(trashwheel_bind_df,
+  trashwheel_name == "gwynnda_trashwheel" &
+  month == "July" &
+  year == 2021) |> 
+select(cigarette_butts) |> 
+sum(na.rm = TRUE)  
+```
 
-What was the total number of cigarette butts collected by Gwynnda in July of 2021?
-
+The total number of cigarette butts collected by Gwynnda in July of 2021 was `r gwynndatrashwheel_total_cigbutts`.
 
 
