@@ -5,6 +5,7 @@ date: "2023-10-02"
 output: github_document
 ---
 
+
 ```{r, echo=FALSE, message=FALSE}
 library(tidyverse)
 library(lubridate)
@@ -171,7 +172,6 @@ The total number of cigarette butts collected by Gwynnda in July of 2021 was `r 
 
 
 ## Problem 3
-Import, clean, and tidy the dataset of baseline demographics. Ensure that sex and APOE4 carrier status are appropriate encoded (i.e. not numeric), and remove any participants who do not meet the stated inclusion criteria (i.e. no MCI at baseline). Discuss important steps in the import process and relevant features of the dataset. How many participants were recruited, and of these how many develop MCI? What is the average baseline age? What proportion of women in the study are APOE4 carriers?
 
 #### Cleaning first dataset
 ```{r}
@@ -251,7 +251,7 @@ na_count_mciamyloid = mci_amyloid |>
   
 mci_amyloid_rowtotal = mci_amyloid |> nrow()
 ```
-I imported, cleaned and tidied the dataset ins cuh a way that all time_points are in one column instead of being split into separate columsn for baseline,time 2, etc. I also skippied the first row because this contained information about the dataset. There are `r mci_amyloid_rowtotal` measurements across all study participants and `r na_count_mciamyloid` NA values for the measurements variable.
+I imported, cleaned and tidied the dataset in such a way that all time_points are in one column instead of being split into separate columsn for baseline,time 2, etc. I also skippied the first row because this contained information about the dataset. There are `r mci_amyloid_rowtotal` measurements across all study participants and `r na_count_mciamyloid` NA values for the measurements variable.
 
 > Check whether some participants appear in only the baseline or amyloid datasets.
 ```{r}
@@ -267,7 +267,7 @@ nrow()
 ```
 There are `r only_in_bl_rows` participants only appearing in the baseline dataset and `r only_inamyloid_rows` participants only in the amyloid dataset. 
 
-##### Combining baseline and amyloid datasets only with participants having data in both 
+#### Combining baseline and amyloid datasets only with participants having data in both 
 ```{r}
 mci_merge =
   inner_join(mci_bl, mci_amyloid, by = "id")
