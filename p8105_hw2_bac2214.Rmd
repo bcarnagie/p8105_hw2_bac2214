@@ -227,23 +227,62 @@ mean(na.rm = TRUE)
 
 The average baseline age is `r avg_age_bl`.
 
-### Cleaning second dataset
+#### Cleaning second dataset
 ```{r}
 mci_amyloid = read_csv("data/mci_amyloid.csv", skip = 1) |>
    janitor::clean_names() |> 
    pivot_longer(
    baseline:time_8,
-   names_to = 
-   values_to = 
-)
-
-
-
+   names_to = "years_since_bl",
+   values_to = "measurements",
+   names_prefix = "time_"
+) |> 
+mutate(years_since_bl = replace(years_since_bl, years_since_bl =="baseline", "0")
+) |> rename("id" = "study_id")
 ```
 
+#### Making info about the variables
 ```{r}
-install.packages("rstudioapi")
-library(rstudioapi)
 
+na_count_mciamyloid = mci_amyloid |> 
+  pull(measurements) |> 
+  is.na() |> 
+  sum()
+  
+mci_amyloid_rowtotal = mci_amyloid |> nrow()
+```
+I imported, cleaned and tidied the dataset ins cuh a way that all time_points are in one column instead of being split into separate columsn for baseline,time 2, etc. I also skippied the first row because this contained information about the dataset. There are `r mci_amyloid_rowtotal` measurements across all study participants and `r na_count_mciamyloid` NA values for the measurements variable.
+
+> Check whether some participants appear in only the baseline or amyloid datasets.
+```{r}
+participants_in_bl = anti_join(mci_bl,mci_amyloid, by = "id")
+
+participants_in_amyloid = anti_join(mci_amyloid, mci_bl, by = "id")
+
+only_inamyloid_rows = nrow(participants_in_amyloid)
+
+only_in_bl_rows = participants_in_bl |> 
+distinct(id) |> 
+nrow()
+```
+There are `r only_in_bl_rows` participants only appearing in the baseline dataset and `r only_inamyloid_rows` participants only in the amyloid dataset. 
+
+##### Combining baseline and amyloid datasets only with participants having data in both 
+```{r}
+mci_merge =
+  inner_join(mci_bl, mci_amyloid, by = "id")
+  
+only_in_both_rows = mci_merge |> 
+distinct(id) |> 
+nrow()
+
+mci_merge_rows = 
+  mci_merge |> nrow()
+```
+There are `r only_in_both_rows` unique individuals with data in both datasets. The dataset has `r mci_merge_rows` total observations.
+
+#### Exporting as a csv
+```{r}
+write.csv(mci_merge, "mci_merge.csv")
 ```
 
